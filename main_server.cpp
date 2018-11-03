@@ -9,6 +9,7 @@ using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
+using grpc::ServerWriter;
 
 
 // grpc server
@@ -20,9 +21,23 @@ public:
     {}
 
 private:
+    Status GetFile(ServerContext* context, const Empty* request, ServerWriter<PartReply>* writer) override {
+        
+    for(int i=0;i<10;++i)
+    {
+        std::string ss = "1234";
+        
+        PartReply f;
+        f.set_value(ss);
+        writer->Write(f);
+    }
+    
+    return Status::OK;
+  }
+    
     Status GetNumber(ServerContext* context, const Empty* request, NumberReply* reply) override 
     {
-        int a = 42;
+        int a = 43;
         reply->set_value(a);
         return Status::OK;
     }

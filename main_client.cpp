@@ -9,6 +9,7 @@
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
+using grpc::ClientReader;
 
 
 // grpc client
@@ -21,7 +22,7 @@ public:
     {
     }
 
-    int GetNumber() 
+    int ReceiveNumber() 
     {
         Empty request;
         NumberReply reply;
@@ -36,7 +37,7 @@ public:
         
     }
 
-    std::string GetString() 
+    std::string ReceiveString() 
     {
         Empty request;
         StringReply reply;
@@ -49,6 +50,31 @@ public:
         
         throw std::runtime_error("server error");
     }
+    
+    
+    
+  void ReceiveFile() {
+    ClientContext context;
+    Empty empty;
+    
+    std::unique_ptr<grpc::ClientReader<PartReply> > reader(
+        stub_->GetFile(&context, empty));
+   
+    PartReply part;
+    
+    while (reader->Read(&part)) {
+      std::cout << part.value() << std::endl;
+    }
+    
+    Status status = reader->Finish();
+    if (status.ok()) {
+      return
+    }
+    
+    throw std::runtime_error("server error");
+  }
+  
+  
 private:
     std::unique_ptr<DataExchange::Stub> stub_;
 };
@@ -59,8 +85,11 @@ int main(int argc, char** argv)
     {
         DataExchangeClient client(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
     
-        std::cout << "Number received: " << client.GetNumber() << std::endl;
-        std::cout << "String received: " << client.GetString() << std::endl;
+        std::cout << "Number received: " << client.ReceiveNumber() << std::endl;
+        std::cout << "String received: " << client.ReceiveString() << std::endl;
+        client.ReceiveFile();
+        std::cout << "File received: " << std::endl;
+        
     }
     catch(std::exception const& e)
     {
