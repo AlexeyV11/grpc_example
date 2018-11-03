@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+service DataExchange {
+
+   rpc GetNumber(Empty) returns (NumberReply) {}
+
+   rpc GetString(Empty) returns (StringReply) {}
+
+   rpc GetFile(Empty) returns (stream PartReply) {}
+
+}
+
+
+message Empty {
+
+}
+
+message NumberReply {
+  int32 value = 1;
+}
+
+message StringReply {
+  string value = 1;
+}
+
+message PartReply {
+  bytes value = 1;
+}
