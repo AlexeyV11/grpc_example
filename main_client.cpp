@@ -13,6 +13,7 @@ using grpc::ClientReader;
 
 
 // grpc client
+
 class DataExchangeClient 
 {
 public:
@@ -32,9 +33,9 @@ public:
 
         if (status.ok())
             return reply.value();
-        
+
         throw std::runtime_error("server error");
-        
+
     }
 
     std::string ReceiveString() 
@@ -47,55 +48,56 @@ public:
 
         if (status.ok())
             return reply.value();
-        
+
         throw std::runtime_error("server error");
     }
-    
-    
-    
-  void ReceiveFile() {
-    ClientContext context;
-    Empty empty;
-    
-    std::unique_ptr<grpc::ClientReader<PartReply> > reader(
-        stub_->GetFile(&context, empty));
-   
-    PartReply part;
-    
-    while (reader->Read(&part)) {
-      std::cout << part.value() << std::endl;
+
+    size_t ReceiveFile(const std::string& filename) 
+    {
+        ClientContext context;
+        Empty empty;
+
+        std::unique_ptr<grpc::ClientReader<PartReply> > reader(
+                stub_->GetFile(&context, empty));
+
+        PartReply part;
+
+        size_t cnt = 0;
+        while (reader->Read(&part)) 
+        {
+            cnt += part.value().size();
+        }
+
+        Status status = reader->Finish();
+        if (status.ok()) 
+        {
+            return cnt;
+        }
+
+        throw std::runtime_error("server error");
     }
-    
-    Status status = reader->Finish();
-    if (status.ok()) {
-      return
-    }
-    
-    throw std::runtime_error("server error");
-  }
-  
-  
+
+
 private:
     std::unique_ptr<DataExchange::Stub> stub_;
 };
 
 int main(int argc, char** argv) 
 {
-    try
+    try 
     {
         DataExchangeClient client(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
-    
+
         std::cout << "Number received: " << client.ReceiveNumber() << std::endl;
         std::cout << "String received: " << client.ReceiveString() << std::endl;
-        client.ReceiveFile();
-        std::cout << "File received: " << std::endl;
-        
-    }
-    catch(std::exception const& e)
+        std::cout << "File received with size: " << client.ReceiveFile("sendme_dst.txt") << std::endl;
+
+    }    
+    catch (std::exception const& e) 
     {
         std::cout << "Exception: " << e.what() << "\n";
         return 1;
-    } 
-    
+    }
+
     return 0;
 }
