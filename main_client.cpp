@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <string>
 
@@ -62,11 +63,18 @@ public:
 
         PartReply part;
 
+        std::ofstream fon;
+        fon.open(filename, std::ofstream::binary);
+        
         size_t cnt = 0;
         while (reader->Read(&part)) 
         {
             cnt += part.value().size();
+
+            fon << part.value();
         }
+        
+        fon.close();
 
         Status status = reader->Finish();
         if (status.ok()) 
