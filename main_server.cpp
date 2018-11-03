@@ -54,6 +54,7 @@ private:
                 writer->Write(f);
             }
         }
+        fin.close();
 
         return Status::OK;
     }
