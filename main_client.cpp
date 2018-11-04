@@ -94,11 +94,13 @@ int main(int argc, char** argv)
 {
     try 
     {
-        DataExchangeClient client(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
+        std::string net_addr = "0.0.0.0:50051";
+        DataExchangeClient client(grpc::CreateChannel(net_addr, grpc::InsecureChannelCredentials()));
 
-        std::cout << "Number received: " << client.ReceiveNumber() << std::endl;
-        std::cout << "String received: " << client.ReceiveString() << std::endl;
-        std::cout << "File received with size: " << client.ReceiveFile("sendme_dst.txt") << std::endl;
+        std::cout << "Client connected :" << net_addr << std::endl;
+        std::cout << "Number received :" << client.ReceiveNumber() << std::endl;
+        std::cout << "String received :" << client.ReceiveString() << std::endl;
+        std::cout << "File received with size :" << client.ReceiveFile("sendme_dst.txt") << std::endl;
 
     }    
     catch (std::exception const& e) 

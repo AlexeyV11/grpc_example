@@ -28,11 +28,13 @@ private:
         std::ifstream fin(this->m_filepath, std::ifstream::binary);
 
         // chunk size
-        const size_t buf_size = 1024;
+        const size_t buf_size = 1024 * 64;
         
         // typedef basic_string<char> string; sizeof(char) is always 1.
         // so we can use str as a byte buffer
         std::string str(buf_size, 'a');
+        
+        size_t total_count = 0;
 
         while (!fin.eof())
         { 
@@ -53,23 +55,26 @@ private:
                 f.set_value(str.substr(0, bytes_read));
                 writer->Write(f);
             }
+            
+            total_count += bytes_read;
         }
         fin.close();
 
+        std::cout << "File sent with size :" << total_count << std::endl;
         return Status::OK;
     }
     
     Status GetNumber(ServerContext* context, const Empty* request, NumberReply* reply) override 
     {
-        int a = 43;
-        reply->set_value(a);
+        reply->set_value(m_n);
+        std::cout << "Number sent :" << m_n << std::endl;
         return Status::OK;
     }
     
     Status GetString(ServerContext* context, const Empty* request, StringReply* reply) override 
     {
-        std::string a("hello");
-        reply->set_value(a);
+        reply->set_value(m_str);
+        std::cout << "String sent :" << m_str << std::endl;
         return Status::OK;
     }
 
@@ -87,16 +92,23 @@ void RunServer(const std::string& net_address, int n, const std::string& str, co
     builder.RegisterService(&service);
     
     std::unique_ptr<Server> server(builder.BuildAndStart());
-    std::cout << "Server listening on " << net_address << std::endl;
+    std::cout << "Server listening :" << net_address << std::endl;
 
     server->Wait();
 }
 
 int main(int argc, char** argv) 
 {
-    // TODO: add proper configuration here
-    // TODO: add error handling
-    RunServer("0.0.0.0:50051", 42, "hello", "sendme_src.txt");
-    
+    try 
+    {
+        // TODO: add proper configuration here
+        RunServer("0.0.0.0:50051", 42, "hello", "sendme_src.txt");
+    }    
+    catch (std::exception const& e) 
+    {
+        std::cout << "Exception: " << e.what() << "\n";
+        return 1;
+    }
+
     return 0;
 }
