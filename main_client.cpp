@@ -92,9 +92,18 @@ private:
 
 int main(int argc, char** argv) 
 {
+    // TODO: add better param parsing
+    std::string param_message = "usage: main_client network_address[string]";
+    
+    if (argc != 2)
+    {
+        std::cout << param_message << std::endl;
+        return 1;
+    }
+
     try 
     {
-        std::string net_addr = "0.0.0.0:50051";
+        std::string net_addr = argv[1];
         DataExchangeClient client(grpc::CreateChannel(net_addr, grpc::InsecureChannelCredentials()));
 
         std::cout << "Client connected :" << net_addr << std::endl;
@@ -106,6 +115,7 @@ int main(int argc, char** argv)
     catch (std::exception const& e) 
     {
         std::cout << "Exception: " << e.what() << "\n";
+        std::cout << param_message << std::endl;
         return 1;
     }
 

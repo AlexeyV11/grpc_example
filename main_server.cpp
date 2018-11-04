@@ -2,6 +2,8 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <sstream>
+
 #include <grpcpp/grpcpp.h>
 
 #include "dataexchange.grpc.pb.h"
@@ -99,14 +101,36 @@ void RunServer(const std::string& net_address, int n, const std::string& str, co
 
 int main(int argc, char** argv) 
 {
+    // TODO: add better param parsing
+    std::string param_message = "usage: main_server network_address[string] int_to_sent[int] string_to_send[string] file_to_send[string]";
+    if (argc != 5)
+    {
+        std::cout << param_message << std::endl;
+        return 1;
+    }
+    
     try 
     {
-        // TODO: add proper configuration here
-        RunServer("0.0.0.0:50051", 42, "hello", "sendme_src.txt");
+        std::string network_address = argv[1];
+        std::string send_int_arg = argv[2];
+        std::string send_string = argv[3];
+        std::string send_file = argv[4];
+        
+        std::istringstream ss(send_int_arg);
+        int send_int = -1;
+        
+        if (!(ss >> send_int)) 
+            throw std::runtime_error("Invalid number :" + send_int_arg);
+        else if(!ss.eof())
+            throw std::runtime_error("Trailing characters after number :" + send_int_arg);
+        
+        RunServer(network_address, send_int, send_string, send_file);
     }    
     catch (std::exception const& e) 
     {
         std::cout << "Exception: " << e.what() << "\n";
+        
+        std::cout << param_message << std::endl;
         return 1;
     }
 
