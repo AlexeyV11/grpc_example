@@ -37,8 +37,8 @@ private:
         std::string str(buf_size, 'a');
         
         size_t total_count = 0;
-
-        while (!fin.eof())
+        
+        while (!fin.eof() && fin.good())
         { 
             fin.read(&str[0], str.size()); 
             size_t bytes_read = fin.gcount(); 

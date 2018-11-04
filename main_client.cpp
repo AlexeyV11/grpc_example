@@ -93,9 +93,9 @@ private:
 int main(int argc, char** argv) 
 {
     // TODO: add better param parsing
-    std::string param_message = "usage: main_client network_address[string]";
+    std::string param_message = "usage: main_client network_address[string] file_to_receive[string]";
     
-    if (argc != 2)
+    if (argc != 3)
     {
         std::cout << param_message << std::endl;
         return 1;
@@ -104,12 +104,14 @@ int main(int argc, char** argv)
     try 
     {
         std::string net_addr = argv[1];
+        std::string filename = argv[2];
+        
         DataExchangeClient client(grpc::CreateChannel(net_addr, grpc::InsecureChannelCredentials()));
 
         std::cout << "Client connected :" << net_addr << std::endl;
         std::cout << "Number received :" << client.ReceiveNumber() << std::endl;
         std::cout << "String received :" << client.ReceiveString() << std::endl;
-        std::cout << "File received with size :" << client.ReceiveFile("sendme_dst.txt") << std::endl;
+        std::cout << "File received with size :" << client.ReceiveFile(filename) << std::endl;
 
     }    
     catch (std::exception const& e) 
