@@ -128,8 +128,7 @@ int main(int argc, char** argv)
     }    
     catch (std::exception const& e) 
     {
-        std::cout << "Exception: " << e.what() << "\n";
-        
+        std::cout << std::endl << "Exception: " << e.what() << std::endl;
         std::cout << param_message << std::endl;
         return 1;
     }
