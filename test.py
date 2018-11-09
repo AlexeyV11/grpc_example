@@ -22,7 +22,7 @@ class PythonTest:
         content = str_generator(random.randint(1,magn))
 
         with open(filename, 'wb') as f_test:
-            f_test.write(content)
+            f_test.write(str.encode(content))
 
         return number, string, filename, content
 
@@ -43,7 +43,7 @@ class PythonTest:
         out_server, _ = server.communicate()
 
         matches = 0
-        for s1, s2 in zip(out_client.split('\n'), out_server.split('\n')):
+        for s1, s2 in zip(out_client.decode("utf-8") .split('\n'), out_server.decode("utf-8") .split('\n')):
             if ':' in s1 and ':' in s2:
                 # check if server send the same that cliend received
                 if s1[s1.index(':') + 1:] == s2[s2.index(':') + 1:]:
