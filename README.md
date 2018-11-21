@@ -1,4 +1,6 @@
 # grpc_example
+C++ GRPC server/client example (with python integration tests) of  sending integer, string and file (which can be really big so we need to send it as a chunks).
+
 # quick start (Ubuntu 16.04)
 1) install/configure grpc environment - https://grpc.io/
 2) open the terminal 
